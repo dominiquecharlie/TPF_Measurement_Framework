@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Program Measurement Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FAF9F7;
+  --ink: #2C2C2C;
+  --ink-soft: #4A4A46;
+  --ink-muted: #6B6B66;
+  --rule: #D8D4CC;
+  --brand-green: #2D6A2F;
+  --brand-green-lt: #A8D4AA;
+  --wellness: #1D7A5F;
+  --wellness-light: #E6F4F0;
+  --create: #6B3FA0;
+  --create-light: #F0EAFB;
+  --aysp: #B85C1A;
+  --aysp-light: #FDF0E6;
+  --mentoring: #1A5FA0;
+  --mentoring-light: #E6EFF9;
+  --safepassage: #A01A4A;
+  --safepassage-light: #F9E6EE;
+  --solidarity: #3A7A2A;
+  --solidarity-light: #EAF4E6;
+  --output-bg: #FFF8EC;
+  --output-border: #E8C96A;
+  --output-text: #7A5A10;
+  --outcome-bg: #EAF4F0;
+  --outcome-border: #6ABFA0;
+  --outcome-text: #1A5A46;
+  --qualitative-bg: #F0EAF9;
+  --qualitative-border: #9B70D4;
+  --qualitative-text: #4A2A80;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #2D6A2F;
+  color: #FAF9F7;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  border-bottom: 2px solid #A8D4AA;
+}
+.nav-title {
+  font-family: Georgia, serif;
+  font-size: 17px;
+  letter-spacing: .01em;
+}
+.nav-org {
+  font-size: 12px;
+  color: #A8D4AA;
+  font-weight: 300;
+}
+
+/* HERO */
+.hero {
+  padding: 64px 40px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--rule);
+}
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: #2D6A2F;
+}
+.hero-desc {
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 620px;
+  line-height: 1.7;
+}
+
+/* LEGEND */
+.legend {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.legend-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  align-self: center;
+  margin-right: 4px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.badge-output { background: var(--output-bg); border-color: var(--output-border); color: var(--output-text); }
+.badge-outcome { background: var(--outcome-bg); border-color: var(--outcome-border); color: var(--outcome-text); }
+.badge-qualitative { background: var(--qualitative-bg); border-color: var(--qualitative-border); color: var(--qualitative-text); }
+.badge-unite { background: #E8F0FE; border-color: #7BAAF7; color: #174EA6; }
+.badge dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+/* PROGRAM TABS */
+.prog-nav {
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+  background: var(--cream);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 40px;
+  overflow-x: auto;
+  display: flex;
+  gap: 0;
+}
+.prog-tab {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .2s, border-color .2s;
+}
+.prog-tab:hover { color: var(--ink); }
+.prog-tab.active { color: var(--ink); border-bottom-color: var(--active-color, var(--ink)); }
+
+/* MAIN CONTENT */
+.main { max-width: 900px; margin: 0 auto; padding: 40px; }
+
+.program-section { display: none; }
+.program-section.active { display: block; }
+
+.prog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--rule);
+}
+.prog-color-bar {
+  width: 5px;
+  min-height: 80px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.prog-header-text h2 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.prog-header-text p {
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 640px;
+}
+
+/* UNIVERSAL INTAKE */
+.universal-intake {
+  background: #E8F0FE;
+  border: 1px solid #7BAAF7;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+}
+.universal-intake .ui-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #174EA6;
+  margin-bottom: 6px;
+}
+.universal-intake .ui-title {
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.universal-intake .ui-desc {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.demo-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.demo-pill {
+  font-size: 11px;
+  background: white;
+  border: 1px solid #B8CFF8;
+  border-radius: 20px;
+  padding: 3px 9px;
+  color: #174EA6;
+}
+.consent-note {
+  font-size: 12px;
+  color: #174EA6;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #B8CFF8;
+}
+
+/* ALIGNMENT GRID */
+.align-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.align-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.align-label-col {
+  background: #2D6A2F;
+  color: #FAF9F7;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.align-label-col .col-cat {
+  display: none;
+}
+.align-label-col .col-name {
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.align-content-col {
+  background: white;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* OBJECTIVE/SKILL ITEMS */
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.item-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+/* METHOD ROWS */
+.method-item {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: start;
+  background: var(--cream);
+}
+.method-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.method-when { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+.method-arrow {
+  font-size: 11px;
+  color: var(--ink-muted);
+  padding-top: 2px;
+}
+
+/* TOOL CARDS */
+.tool-card {
+  border-radius: 8px;
+  padding: 13px 16px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tool-card.output {
+  background: var(--output-bg);
+  border-color: var(--output-border);
+}
+.tool-card.outcome {
+  background: var(--outcome-bg);
+  border-color: var(--outcome-border);
+}
+.tool-card.qualitative {
+  background: var(--qualitative-bg);
+  border-color: var(--qualitative-border);
+}
+.tool-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tool-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.tool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+.tool-platform {
+  font-size: 11px;
+  color: var(--ink-muted);
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+.tool-when {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.qual-note {
+  font-size: 12px;
+  color: var(--qualitative-text);
+  padding-top: 4px;
+  border-top: 1px solid var(--qualitative-border);
+  line-height: 1.5;
+  opacity: .85;
+}
+
+/* ASSESSMENT */
+.assess-item {
+  font-size: 14px;
+  color: var(--ink);
+  padding: 8px 12px;
+  background: var(--cream);
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* FLOW CONNECTORS */
+.flow-connector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 4px 18px;
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+.flow-connector::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 16px;
+  background: var(--rule);
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .hero { padding: 40px 20px 32px; }
+  .legend { padding: 20px; }
+  .prog-nav { padding: 0 16px; }
+  .main { padding: 24px 20px; }
+  .align-row { grid-template-columns: 1fr; }
+  .align-label-col { padding: 12px 16px; }
+  .prog-header { flex-direction: column; gap: 12px; }
+  .prog-color-bar { width: 100%; height: 4px; min-height: unset; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">Tomorrow's Promise Foundation</span>
+  <a href="facilitator_workflows.html" style="font-size:12px; color:#A8D4AA; font-weight:300; text-decoration:none; border:1px solid #4A8A4A; border-radius:4px; padding:4px 12px;">Facilitator Workflows &rarr;</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Program Measurement Framework &mdash; 2026</div>
+  <h1>What we measure,<br><em>and why it matters.</em></h1>
+  <p class="hero-desc">This framework maps each program's learning objectives and teaching methods directly to data collection tools, noting whether each tool captures an <strong>output</strong> (what happened) or an <strong>outcome</strong> (what changed), and where qualitative methods serve the work better than a form.</p>
+</div>
+
+<div class="legend">
+  <span class="legend-label">Key</span>
+  <span class="badge badge-output"><dot></dot> Output &mdash; what happened</span>
+  <span class="badge badge-outcome"><dot></dot> Outcome &mdash; what changed</span>
+  <span class="badge badge-qualitative"><dot></dot> Qualitative method</span>
+  <span class="badge badge-unite"><dot></dot> Unite Us</span>
+</div>
+
+<!-- PROGRAM TABS -->
+<div class="prog-nav">
+  <button class="prog-tab active" style="--active-color:#1D7A5F" onclick="showProg('wellness', this)">Wellness Wednesday</button>
+  <button class="prog-tab" style="--active-color:#6B3FA0" onclick="showProg('create', this)">Create in the Park</button>
+  <button class="prog-tab" style="--active-color:#B85C1A" onclick="showProg('aysp', this)">Austin Youth Safety</button>
+  <button class="prog-tab" style="--active-color:#1A5FA0" onclick="showProg('mentoring', this)">Mentoring</button>
+  <button class="prog-tab" style="--active-color:#A01A4A" onclick="showProg('safepassage', this)">Safe Passage</button>
+  <button class="prog-tab" style="--active-color:#3A7A2A" onclick="showProg('solidarity', this)">Youth Solidarity</button>
+</div>
+
+<div class="main">
+
+<!-- ===================== WELLNESS WEDNESDAY ===================== -->
+<div class="program-section active" id="prog-wellness">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#1D7A5F"></div>
+    <div class="prog-header-text">
+      <h2>Wellness Wednesday</h2>
+      <p>A community wellness program building physical and mental health habits through group walks, recreational activities, nutrition support, and facilitated wellness discussions.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment for every participant across all programs. Captures demographics and releases for photo/video use.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span>
+      <span class="demo-pill">Race / Ethnicity</span>
+      <span class="demo-pill">Gender</span>
+      <span class="demo-pill">Zip code</span>
+      <span class="demo-pill">School</span>
+      <span class="demo-pill">Household income</span>
+      <span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Includes media release: consent for photo, video, and social media use of participant likeness. Required before any video or image is captured.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col">
+        <div class="col-cat">Column 1</div>
+        <div class="col-name">Learning Objectives</div>
+      </div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Increase understanding of physical and mental wellness</div>
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Build healthy routines</div>
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Strengthen awareness of stress management, mindfulness, and nutrition</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col">
+        <div class="col-cat">Column 2</div>
+        <div class="col-name">Skills Developed</div>
+      </div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Self-awareness</div>
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Emotional regulation</div>
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Healthy decision-making</div>
+        <div class="item-row"><div class="item-dot" style="background:#1D7A5F"></div>Fitness habits and teamwork</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col">
+        <div class="col-cat">Column 3</div>
+        <div class="col-name">Teaching Methods + When to Collect</div>
+      </div>
+      <div class="align-content-col">
+        <div class="method-item">
+          <div><div class="method-name">Guided group walks</div><div class="method-when">Each session &rarr; attendance log</div></div>
+        </div>
+        <div class="method-item">
+          <div><div class="method-name">Facilitated wellness discussions</div><div class="method-when">Each session &rarr; facilitator captures short video clip</div></div>
+        </div>
+        <div class="method-item">
+          <div><div class="method-name">Nutrition support</div><div class="method-when">Monthly &rarr; caregiver check-in</div></div>
+        </div>
+        <div class="method-item">
+          <div><div class="method-name">Recreational activities (basketball, volleyball, outdoor games)</div><div class="method-when">Each session &rarr; participation noted in attendance log</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col">
+        <div class="col-cat">Column 4</div>
+        <div class="col-name">Data Collection Tools</div>
+      </div>
+      <div class="align-content-col">
+        <div class="tool-card output">
+          <div class="tool-top">
+            <div class="tool-name">Session attendance log</div>
+            <span class="badge badge-output">Output</span>
+          </div>
+          <div class="tool-meta">
+            <span class="tool-platform">Google Sheets</span>
+            <span class="tool-when">Each session</span>
+          </div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top">
+            <div class="tool-name">Facilitator video clip &mdash; youth in session</div>
+            <span class="badge badge-qualitative">Qualitative</span>
+          </div>
+          <div class="tool-meta">
+            <span class="tool-platform">Smartphone &rarr; social media reel</span>
+            <span class="tool-when">Each session (consent required)</span>
+          </div>
+          <div class="qual-note">Short video clip recorded by facilitator during sessions. Doubles as qualitative documentation and social media content. Media release captured in Unite Us intake. No form needed.</div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top">
+            <div class="tool-name">Caregiver / parent check-in (2&ndash;3 questions)</div>
+            <span class="badge badge-outcome">Outcome</span>
+          </div>
+          <div class="tool-meta">
+            <span class="tool-platform">Google Forms (text or email link)</span>
+            <span class="tool-when">Monthly</span>
+          </div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top">
+            <div class="tool-name">Facilitator engagement observation notes</div>
+            <span class="badge badge-outcome">Outcome</span>
+          </div>
+          <div class="tool-meta">
+            <span class="tool-platform">Google Forms</span>
+            <span class="tool-when">After each session</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col">
+        <div class="col-cat">Column 5</div>
+        <div class="col-name">What Gets Assessed</div>
+      </div>
+      <div class="align-content-col">
+        <div class="assess-item">Attendance tracking <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Youth check-ins <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Observation of participation and engagement <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Short reflection prompts &mdash; captured via facilitator video clip rather than written form <span class="badge badge-qualitative">Qualitative</span></div>
+        <div class="assess-item">Parent / youth feedback on well-being and consistency <span class="badge badge-outcome">Outcome</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== CREATE IN THE PARK ===================== -->
+<div class="program-section" id="prog-create">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#6B3FA0"></div>
+    <div class="prog-header-text">
+      <h2>Create in the Park</h2>
+      <p>An open studio arts program using creativity as a tool for emotional expression, belonging, and family connection. The artwork itself is a primary data artifact.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment. Demographics collected and media release signed before any artwork is photographed or shared.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span><span class="demo-pill">Race / Ethnicity</span><span class="demo-pill">Gender</span><span class="demo-pill">Zip code</span><span class="demo-pill">School</span><span class="demo-pill">Household income</span><span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Includes media release covering photos of artwork, youth in session, and family participation. Required before artwork is documented.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 1</div><div class="col-name">Learning Objectives</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Use creativity as a tool for emotional expression</div>
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Reduce stress and isolation</div>
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Strengthen positive identity, connection, and belonging</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 2</div><div class="col-name">Skills Developed</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Creative expression and emotional literacy</div>
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Confidence and self-expression</div>
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Collaboration and family engagement</div>
+        <div class="item-row"><div class="item-dot" style="background:#6B3FA0"></div>Problem-solving</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 3</div><div class="col-name">Teaching Methods + When to Collect</div></div>
+      <div class="align-content-col">
+        <div class="method-item"><div><div class="method-name">Hands-on art activities / open studio</div><div class="method-when">Each session &rarr; photograph completed artwork with tagging protocol</div></div></div>
+        <div class="method-item"><div><div class="method-name">Family-centered creative projects</div><div class="method-when">When families attend &rarr; family participation log</div></div></div>
+        <div class="method-item"><div><div class="method-name">Facilitated conversations about feelings</div><div class="method-when">Each session &rarr; facilitator mood observation note</div></div></div>
+        <div class="method-item"><div><div class="method-name">Inclusive peer sharing / showcase</div><div class="method-when">At program milestone &rarr; showcase documentation</div></div></div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 4</div><div class="col-name">Data Collection Tools</div></div>
+      <div class="align-content-col">
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Session participation log</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">Each session</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Artwork photo portfolio (tagged)</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Smartphone &rarr; Google Drive folder</span><span class="tool-when">Each session</span></div>
+          <div class="qual-note">Facilitator photographs completed artwork using a simple tagging protocol: date, session theme, youth initials. The portfolio is the qualitative artifact. No form needed &mdash; the art documents itself. Media release required via Unite Us intake.</div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Facilitator mood and engagement observation</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms (brief)</span><span class="tool-when">After each session</span></div>
+          <div class="qual-note">2&ndash;3 open fields: overall mood in the room, any notable moments of connection or isolation, anything to flag. Kept brief so facilitators actually complete it.</div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Family participation log</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">When families attend</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Showcase documentation</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Photos + brief notes &rarr; Google Drive</span><span class="tool-when">At program milestone</span></div>
+          <div class="qual-note">Photos of displayed work, number of attendees, and a short facilitator write-up of the event. Qualitative artifact for reporting and communications.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 5</div><div class="col-name">What Gets Assessed</div></div>
+      <div class="align-content-col">
+        <div class="assess-item">Participation counts <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Observation of engagement and self-expression <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Informal youth / family feedback <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Showcase of completed work <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Reflection on mood and connection <span class="badge badge-qualitative">Qualitative</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== AUSTIN YOUTH SAFETY ===================== -->
+<div class="program-section" id="prog-aysp">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#B85C1A"></div>
+    <div class="prog-header-text">
+      <h2>Austin Youth Safety Program</h2>
+      <p>A civic engagement program equipping youth to document lived experience through photovoice and develop community safety policy recommendations for real stakeholders.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment. Media release covers photovoice images, presentation recordings, and any published policy products.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span><span class="demo-pill">Race / Ethnicity</span><span class="demo-pill">Gender</span><span class="demo-pill">Zip code</span><span class="demo-pill">School</span><span class="demo-pill">Household income</span><span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Media release covers: photovoice images, policy briefs attributed to youth, presentation recordings, and any published or shared advocacy materials.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 1</div><div class="col-name">Learning Objectives</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Build civic knowledge</div>
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Increase understanding of community safety issues</div>
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Equip youth to document lived experience and develop policy recommendations</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 2</div><div class="col-name">Skills Developed</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Civic engagement and research</div>
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Critical thinking and visual storytelling</div>
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Public speaking and policy analysis</div>
+        <div class="item-row"><div class="item-dot" style="background:#B85C1A"></div>Advocacy</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 3</div><div class="col-name">Teaching Methods + When to Collect</div></div>
+      <div class="align-content-col">
+        <div class="method-item"><div><div class="method-name">Photovoice activities</div><div class="method-when">Each photovoice session &rarr; submission log + archive of images</div></div></div>
+        <div class="method-item"><div><div class="method-name">Pre/post assessments</div><div class="method-when">Program start and end &rarr; civic knowledge survey</div></div></div>
+        <div class="method-item"><div><div class="method-name">Facilitated dialogue and policy workshops</div><div class="method-when">After each session &rarr; participation notes + policy product</div></div></div>
+        <div class="method-item"><div><div class="method-name">Presentations to policymakers / community</div><div class="method-when">After each presentation &rarr; artifact log + stakeholder response</div></div></div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 4</div><div class="col-name">Data Collection Tools</div></div>
+      <div class="align-content-col">
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Civic knowledge pre/post survey</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">Program start and end</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Photovoice archive (image + caption log)</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Drive + Sheets tracking log</span><span class="tool-when">Each photovoice session</span></div>
+          <div class="qual-note">Youth-produced photographs and captions are the primary qualitative artifact. Logged with date, youth initials, and session theme. The images themselves are evidence of visual storytelling skill and civic documentation. Consent required via Unite Us.</div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Policy product archive (briefs, slides, written recommendations)</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Drive</span><span class="tool-when">At workshop completion</span></div>
+          <div class="qual-note">The policy brief, slide deck, or recommendation document produced by youth is the outcome artifact. Archived per cohort and used as evidence of policy analysis and advocacy skill.</div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Presentation observation + stakeholder response log</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms (facilitator-completed)</span><span class="tool-when">After each presentation to stakeholders</span></div>
+          <div class="qual-note">Facilitator notes youth confidence, questions asked by stakeholders, and any commitments or responses made. This is qualitative evidence that advocacy had real-world reach.</div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Participation tracker</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">Ongoing</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 5</div><div class="col-name">What Gets Assessed</div></div>
+      <div class="align-content-col">
+        <div class="assess-item">Pre / post surveys <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Quality of photovoice and policy products <span class="badge badge-qualitative">Qualitative</span></div>
+        <div class="assess-item">Participation in discussions <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Follow-up tracking of policy recommendations <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Facilitator observation of growth in civic confidence <span class="badge badge-outcome">Outcome</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== MENTORING ===================== -->
+<div class="program-section" id="prog-mentoring">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#1A5FA0"></div>
+    <div class="prog-header-text">
+      <h2>Mentoring</h2>
+      <p>A one-on-one and group mentoring program building social-emotional skills, academic motivation, and goal-setting capacity through sustained adult relationships and life skills support.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment. Demographics and caregiver contact captured here. Media release covers any photos or videos taken during mentoring activities.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span><span class="demo-pill">Race / Ethnicity</span><span class="demo-pill">Gender</span><span class="demo-pill">Zip code</span><span class="demo-pill">School</span><span class="demo-pill">Household income</span><span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Also captures: caregiver name and contact for periodic check-ins. Media release for photos taken during mentoring activities.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 1</div><div class="col-name">Learning Objectives</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Support social-emotional growth</div>
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Improve academic motivation and attendance</div>
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Strengthen self-esteem, resilience, and goal-setting</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 2</div><div class="col-name">Skills Developed</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Relationship-building and self-management</div>
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Communication and goal-setting</div>
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Academic habits and life skills</div>
+        <div class="item-row"><div class="item-dot" style="background:#1A5FA0"></div>Leadership and resilience</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 3</div><div class="col-name">Teaching Methods + When to Collect</div></div>
+      <div class="align-content-col">
+        <div class="method-item"><div><div class="method-name">One-on-one mentoring sessions</div><div class="method-when">After each session &rarr; mentor session log</div></div></div>
+        <div class="method-item"><div><div class="method-name">Life skills sessions and group mentoring</div><div class="method-when">Each session &rarr; group attendance log</div></div></div>
+        <div class="method-item"><div><div class="method-name">Regular check-ins and coaching</div><div class="method-when">Program midpoint &rarr; youth check-in; monthly &rarr; mentor voice memo</div></div></div>
+        <div class="method-item"><div><div class="method-name">Tutoring and academic support</div><div class="method-when">Monthly &rarr; academic progress note from mentor</div></div></div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 4</div><div class="col-name">Data Collection Tools</div></div>
+      <div class="align-content-col">
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Mentor session log</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms &rarr; Sheets</span><span class="tool-when">After each session</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Youth goal-setting form</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">First 1&ndash;2 sessions</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Youth mid-point check-in (self-report)</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">Program midpoint</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Youth exit survey (self-report)</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">Program completion</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Mentor 60-second voice memo</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Smartphone voice memo &rarr; coordinator reviews monthly</span><span class="tool-when">Monthly</span></div>
+          <div class="qual-note">Mentor records a 60-second audio note answering two questions: "What did you notice about this youth this month?" and "Any concerns or wins to flag?" Coordinator listens and logs themes. No written form required &mdash; reduces burden on volunteer mentors while preserving rich qualitative data.</div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Program progress tracker</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets (coordinator-maintained)</span><span class="tool-when">Ongoing</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 5</div><div class="col-name">What Gets Assessed</div></div>
+      <div class="align-content-col">
+        <div class="assess-item">Mentor logs <span class="badge badge-qualitative">Qualitative</span></div>
+        <div class="assess-item">Attendance and participation records <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Academic progress indicators, when available <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Youth goal reviews <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Periodic feedback from youth, mentors, and caregivers <span class="badge badge-outcome">Outcome</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== SAFE PASSAGE ===================== -->
+<div class="program-section" id="prog-safepassage">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#A01A4A"></div>
+    <div class="prog-header-text">
+      <h2>Safe Passage</h2>
+      <p>A daily community safety program where credible messengers provide visible, trusted presence on routes to and from school, with mediation, coaching, and referral support.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment for youth participants who receive direct services. Credible messengers are staff and do not complete this form.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span><span class="demo-pill">Race / Ethnicity</span><span class="demo-pill">Gender</span><span class="demo-pill">Zip code</span><span class="demo-pill">School</span><span class="demo-pill">Household income</span><span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Media release required before any video or photo involving a youth participant is captured or shared.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 1</div><div class="col-name">Learning Objectives</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Promote safety awareness</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Reduce exposure to violence</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Strengthen conflict de-escalation and trust in community-based supports</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Connect youth to resources</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 2</div><div class="col-name">Skills Developed</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Conflict resolution and situational awareness</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Help-seeking and trust-building</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Emotional regulation</div>
+        <div class="item-row"><div class="item-dot" style="background:#A01A4A"></div>Community connection</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 3</div><div class="col-name">Teaching Methods + When to Collect</div></div>
+      <div class="align-content-col">
+        <div class="method-item"><div><div class="method-name">Daily supportive presence on routes</div><div class="method-when">Daily &rarr; presence log + voice memo after significant interactions</div></div></div>
+        <div class="method-item"><div><div class="method-name">Mediation and de-escalation</div><div class="method-when">As incidents occur &rarr; incident documentation form</div></div></div>
+        <div class="method-item"><div><div class="method-name">Referrals and partner coordination</div><div class="method-when">As referrals are made &rarr; referral tracking log</div></div></div>
+        <div class="method-item"><div><div class="method-name">Hotspot monitoring</div><div class="method-when">Weekly &rarr; hotspot trend tracker</div></div></div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 4</div><div class="col-name">Data Collection Tools</div></div>
+      <div class="align-content-col">
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Daily presence and touchpoint log</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">Daily</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Credible messenger 30-second field voice memo</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Smartphone voice memo &rarr; coordinator reviews weekly</span><span class="tool-when">After significant interactions</span></div>
+          <div class="qual-note">After a notable interaction (mediation, youth in distress, safety concern), the credible messenger records a 30-second voice memo describing what happened and what they did. Far more realistic than typing notes in the field. Coordinator listens and logs themes and patterns weekly.</div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Incident documentation form</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">As incidents occur</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Referral tracking log</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">As referrals are made</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Perceived safety survey (youth and family)</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms (text or email link)</span><span class="tool-when">Quarterly</span></div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Hotspot trend tracker</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">Weekly</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 5</div><div class="col-name">What Gets Assessed</div></div>
+      <div class="align-content-col">
+        <div class="assess-item">Incident and touchpoint documentation <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Student / family reports of perceived safety <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Referral follow-up <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Partnership feedback <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Trend review of safety concerns in target areas <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Qualitative patterns from field voice memos <span class="badge badge-qualitative">Qualitative</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== YOUTH SOLIDARITY ===================== -->
+<div class="program-section" id="prog-solidarity">
+  <div class="prog-header">
+    <div class="prog-color-bar" style="background:#3A7A2A"></div>
+    <div class="prog-header-text">
+      <h2>Youth Solidarity Program</h2>
+      <p>A community organizing and advocacy program building youth capacity for empathy, service, and systems-change action through outreach, restorative circles, and public advocacy.</p>
+    </div>
+  </div>
+
+  <div class="universal-intake">
+    <div class="ui-label">Unite Us &mdash; All Programs</div>
+    <div class="ui-title">Universal Intake + Consent Form</div>
+    <div class="ui-desc">Completed at enrollment. Media release covers outreach trip photos, social media posts featuring youth, and any published advocacy materials.</div>
+    <div class="demo-fields">
+      <span class="demo-pill">Age / Date of birth</span><span class="demo-pill">Race / Ethnicity</span><span class="demo-pill">Gender</span><span class="demo-pill">Zip code</span><span class="demo-pill">School</span><span class="demo-pill">Household income</span><span class="demo-pill">Primary language</span>
+    </div>
+    <div class="consent-note">&#10003; Media release covers: outreach trip photos, social media posts featuring youth, petitions attributed to participants, and any published advocacy or organizing materials.</div>
+  </div>
+
+  <div class="align-grid">
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 1</div><div class="col-name">Learning Objectives</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Increase awareness of homelessness and its root causes</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Foster empathy and solidarity</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Build service and advocacy capacity</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Strengthen youth understanding of systems change</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These objectives define what skills participants should develop</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 2</div><div class="col-name">Skills Developed</div></div>
+      <div class="align-content-col">
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Empathy and community engagement</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Organizing and advocacy</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Restorative dialogue and teamwork</div>
+        <div class="item-row"><div class="item-dot" style="background:#3A7A2A"></div>Leadership and public communication</div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Teaching methods create the moments when data can be captured</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 3</div><div class="col-name">Teaching Methods + When to Collect</div></div>
+      <div class="align-content-col">
+        <div class="method-item"><div><div class="method-name">Restorative circles (regular)</div><div class="method-when">After each circle &rarr; designated note-taker captures 2&ndash;3 key themes or quotes</div></div></div>
+        <div class="method-item"><div><div class="method-name">Outreach trips and care package assembly</div><div class="method-when">After each trip &rarr; outreach trip documentation + photo</div></div></div>
+        <div class="method-item"><div><div class="method-name">Collection drives</div><div class="method-when">After each drive &rarr; items collected tracker</div></div></div>
+        <div class="method-item"><div><div class="method-name">Presentations, social media, petitions, public speaking</div><div class="method-when">As completed &rarr; advocacy output log</div></div></div>
+      </div>
+    </div>
+
+    <div class="flow-connector">These methods point to specific tools needed</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 4</div><div class="col-name">Data Collection Tools</div></div>
+      <div class="align-content-col">
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Restorative circle notes (designated note-taker)</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Docs &rarr; Drive archive</span><span class="tool-when">After each circle</span></div>
+          <div class="qual-note">A designated note-taker (rotating role, youth or staff) captures 2&ndash;3 key themes, quotes, or moments of shift from each circle. No individual attribution. The notes are the qualitative record of dialogue quality, empathy development, and solidarity-building over time.</div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Outreach activity log</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">After each outreach activity</span></div>
+        </div>
+        <div class="tool-card qualitative">
+          <div class="tool-top"><div class="tool-name">Outreach trip photo documentation</div><span class="badge badge-qualitative">Qualitative</span></div>
+          <div class="tool-meta"><span class="tool-platform">Smartphone &rarr; Google Drive + social media</span><span class="tool-when">Each trip (consent required)</span></div>
+          <div class="qual-note">Photos from outreach trips document youth in action and serve as both qualitative evidence of participation and social media content. Media release captured in Unite Us intake.</div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Youth reflection form (systems and empathy)</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">Periodically (after major activities)</span></div>
+        </div>
+        <div class="tool-card output">
+          <div class="tool-top"><div class="tool-name">Advocacy output log (presentations, petitions, posts)</div><span class="badge badge-output">Output</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Sheets</span><span class="tool-when">As completed</span></div>
+        </div>
+        <div class="tool-card outcome">
+          <div class="tool-top"><div class="tool-name">Partner feedback form</div><span class="badge badge-outcome">Outcome</span></div>
+          <div class="tool-meta"><span class="tool-platform">Google Forms</span><span class="tool-when">After collaborative activities</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">Tools feed directly into what gets assessed and reported</div>
+
+    <div class="align-row">
+      <div class="align-label-col"><div class="col-cat">Column 5</div><div class="col-name">What Gets Assessed</div></div>
+      <div class="align-content-col">
+        <div class="assess-item">Number of outreach activities and items distributed <span class="badge badge-output">Output</span></div>
+        <div class="assess-item">Youth reflection and discussion <span class="badge badge-qualitative">Qualitative</span></div>
+        <div class="assess-item">Observation of advocacy participation <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Partner feedback <span class="badge badge-outcome">Outcome</span></div>
+        <div class="assess-item">Evidence of public awareness or policy engagement efforts <span class="badge badge-outcome">Outcome</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<div style="text-align:center; padding:24px 40px; font-size:11px; color:#6B6B66; font-family:'DM Sans',sans-serif; border-top:1px solid #D8D4CC; margin-top:40px;">
+  Developed by Intentional Data for Tomorrow's Promise Foundation &mdash; intentionaldata.org
+</div>
+
+<script>
+function showProg(id, btn) {
+  document.querySelectorAll('.program-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.prog-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('prog-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: document.querySelector('.prog-nav').offsetTop - 56, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
