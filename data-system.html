@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomorrow's Promise — Data System Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #2D6A2F;
+  --green-lt: #A8D4AA;
+  --green-xlt: #EAF4EA;
+  --warm: #FAF9F7;
+  --ink: #2C2C2C;
+  --ink-soft: #4A4A46;
+  --muted: #6B6B66;
+  --rule: #D8D4CC;
+  --white: #FFFFFF;
+  --amber: #B85C1A;
+  --amber-lt: #FDF0E6;
+  --red: #A03030;
+  --red-lt: #FDE8E8;
+  --blue: #1A5FA0;
+  --blue-lt: #E6EFF9;
+  --purple: #6B3FA0;
+  --purple-lt: #F0EAFB;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--warm);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--green);
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+  border-bottom: 2px solid var(--green-lt);
+}
+.nav-title { font-family: Georgia, serif; font-size: 15px; color: var(--white); }
+.nav-sub { font-size: 11px; color: var(--green-lt); font-weight: 300; }
+.nav-back { font-size: 11px; color: var(--green-lt); text-decoration: none; border: 1px solid #4A8A4A; border-radius: 4px; padding: 3px 10px; }
+
+/* SCREEN NAV PILLS */
+.screen-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 28px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.screen-btn {
+  font-size: 12px; font-weight: 500;
+  padding: 12px 16px;
+  border: none; background: transparent;
+  color: var(--muted); cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s, border-color .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.screen-btn:hover { color: var(--ink); }
+.screen-btn.active { color: var(--green); border-bottom-color: var(--green); }
+.step-num {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--rule); color: var(--muted);
+  font-size: 10px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.screen-btn.active .step-num { background: var(--green); color: var(--white); }
+
+/* MAIN */
+.main { max-width: 980px; margin: 0 auto; padding: 32px 28px; }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* SCREEN HEADER */
+.screen-header { margin-bottom: 28px; }
+.screen-eyebrow {
+  font-size: 10px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.screen-title { font-family: Georgia, serif; font-size: 26px; color: var(--ink); margin-bottom: 6px; }
+.screen-desc { font-size: 13px; color: var(--ink-soft); max-width: 600px; }
+
+/* CARDS */
+.card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 20px;
+}
+.card-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.card-title { font-size: 14px; font-weight: 500; color: var(--ink); }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+/* STATUS BADGES */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 500;
+  padding: 2px 8px; border-radius: 20px; border: 1px solid;
+}
+.badge-green { background: var(--green-xlt); border-color: var(--green-lt); color: var(--green); }
+.badge-amber { background: var(--amber-lt); border-color: #E8C96A; color: var(--amber); }
+.badge-red   { background: var(--red-lt);   border-color: #E07070;  color: var(--red); }
+.badge-blue  { background: var(--blue-lt);  border-color: #7BAAF7;  color: var(--blue); }
+.badge dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* FORM ELEMENTS */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--ink-soft); margin-bottom: 5px; display: block; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--rule); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink);
+  background: var(--warm);
+  transition: border-color .15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(45,106,47,.08);
+}
+.form-textarea { min-height: 72px; resize: vertical; }
+.search-wrap { position: relative; }
+.search-wrap .form-input { padding-left: 34px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  padding: 9px 18px; border-radius: 6px; border: none;
+  cursor: pointer; transition: all .15s;
+}
+.btn-primary { background: var(--green); color: var(--white); }
+.btn-primary:hover { background: #245526; }
+.btn-secondary { background: var(--white); color: var(--ink); border: 1px solid var(--rule); }
+.btn-secondary:hover { border-color: var(--green); color: var(--green); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* TABLE */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); padding: 8px 12px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--warm);
+}
+.data-table td {
+  padding: 10px 12px; font-size: 13px; color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--green-xlt); cursor: pointer; }
+
+/* TIMELINE */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.timeline-item { display: grid; grid-template-columns: 80px 20px 1fr; gap: 0 12px; align-items: stretch; }
+.timeline-date { font-size: 11px; color: var(--muted); text-align: right; padding-top: 3px; }
+.timeline-line { display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 4px; }
+.timeline-connector { width: 1px; flex: 1; background: var(--rule); min-height: 20px; }
+.timeline-item:last-child .timeline-connector { display: none; }
+.timeline-content { padding-bottom: 18px; }
+.timeline-type { font-size: 11px; font-weight: 500; color: var(--green); text-transform: uppercase; letter-spacing: .06em; }
+.timeline-note { font-size: 13px; color: var(--ink); margin-top: 2px; }
+.timeline-staff { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* STAT CARDS */
+.stat-card { background: var(--white); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+.stat-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-family: Georgia, serif; font-size: 32px; color: var(--ink); line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ALERT */
+.alert { border-radius: 8px; padding: 12px 16px; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+.alert-amber { background: var(--amber-lt); border: 1px solid #E8C96A; color: var(--amber); }
+.alert-green  { background: var(--green-xlt); border: 1px solid var(--green-lt); color: var(--green); }
+
+/* PROGRESS BAR */
+.progress-wrap { background: var(--rule); border-radius: 4px; height: 6px; margin-top: 6px; }
+.progress-bar  { background: var(--green); border-radius: 4px; height: 6px; transition: width .4s; }
+
+/* SEARCH DROPDOWN */
+.search-results {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  margin-top: 2px; display: none;
+}
+.search-result-item {
+  padding: 10px 14px; cursor: pointer;
+  border-bottom: 1px solid var(--rule);
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--green-xlt); }
+.result-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.result-meta { font-size: 11px; color: var(--muted); }
+
+/* FLOW DIAGRAM */
+.flow-step-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.flow-node {
+  flex: 1; background: var(--white); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 12px 14px;
+}
+.flow-node.active-node { border-color: var(--green); background: var(--green-xlt); }
+.flow-node-label { font-size: 12px; font-weight: 500; color: var(--ink); }
+.flow-node-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.flow-arrow { color: var(--muted); font-size: 16px; flex-shrink: 0; }
+
+/* TABS */
+.tab-row { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab-btn {
+  font-size: 12px; font-weight: 500; padding: 6px 14px;
+  border: 1px solid var(--rule); border-radius: 20px;
+  background: var(--white); color: var(--muted);
+  cursor: pointer; transition: all .15s;
+}
+.tab-btn.active { background: var(--green); border-color: var(--green); color: var(--white); }
+
+/* CREDIT */
+.credit { text-align: center; padding: 24px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--rule); margin-top: 48px; }
+
+/* CHIP */
+.chip { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--warm); border: 1px solid var(--rule); color: var(--ink-soft); margin: 2px; }
+
+@media (max-width: 640px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .main { padding: 20px 16px; }
+  .screen-nav { padding: 0 16px; }
+  nav { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="nav-title">Tomorrow's Promise Foundation</div>
+    <div class="nav-sub">Client Data System — Interactive Prototype</div>
+  </div>
+  <a href="index.html" class="nav-back">&larr; Measurement Framework</a>
+</nav>
+
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="showScreen(0,this)">
+    <span class="step-num">1</span> Intake form
+  </button>
+  <button class="screen-btn" onclick="showScreen(1,this)">
+    <span class="step-num">2</span> Client record created
+  </button>
+  <button class="screen-btn" onclick="showScreen(2,this)">
+    <span class="step-num">3</span> Log an interaction
+  </button>
+  <button class="screen-btn" onclick="showScreen(3,this)">
+    <span class="step-num">4</span> Individual client view
+  </button>
+  <button class="screen-btn" onclick="showScreen(4,this)">
+    <span class="step-num">5</span> Program view
+  </button>
+  <button class="screen-btn" onclick="showScreen(5,this)">
+    <span class="step-num">6</span> Board dashboard
+  </button>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 1: Intake form                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-0">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 1 of 6</div>
+    <div class="screen-title">A youth finds Tomorrow's Promise online</div>
+    <div class="screen-desc">They see a post on social media, scan a QR code, or click a link. This form is the front door. Filling it out creates their record in the system.</div>
+  </div>
+
+  <div class="alert alert-green">
+    <span>&#9432;</span>
+    <span>This form lives on the org's website and social media. A youth or caregiver fills it out independently, or staff fills it out during first contact. Either way, one submission creates one record.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Tomorrow's Promise Foundation — Participant Intake</div>
+        <div class="card-sub">Your information is kept private and used only to connect you with support.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">First name *</label>
+        <input class="form-input" type="text" placeholder="Marcus" value="Marcus">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last name *</label>
+        <input class="form-input" type="text" placeholder="Johnson" value="Johnson">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of birth *</label>
+        <input class="form-input" type="date" value="2010-03-14">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <select class="form-select">
+          <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Race / Ethnicity</label>
+        <select class="form-select">
+          <option>Black or African American</option><option>Hispanic or Latino</option><option>White</option><option>Multiracial</option><option>Prefer not to say</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Zip code</label>
+        <input class="form-input" type="text" placeholder="78701" value="78745">
+      </div>
+      <div class="form-group">
+        <label class="form-label">School</label>
+        <input class="form-input" type="text" placeholder="School name" value="Travis Early College High School">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Household income range</label>
+        <select class="form-select">
+          <option>Under $25,000</option><option selected>$25,000 – $49,999</option><option>$50,000 – $74,999</option><option>$75,000+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary language</label>
+        <select class="form-select">
+          <option selected>English</option><option>Spanish</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Caregiver name + phone</label>
+        <input class="form-input" type="text" placeholder="Name and phone number" value="Denise Johnson — 512-555-0192">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:8px;">
+      <label class="form-label">How did you hear about us?</label>
+      <select class="form-select">
+        <option>Instagram</option><option>Facebook</option><option selected>Word of mouth</option><option>Flyer</option><option>Partner referral</option>
+      </select>
+    </div>
+
+    <div style="background:var(--amber-lt); border:1px solid #E8C96A; border-radius:8px; padding:14px; margin:16px 0;">
+      <div style="font-size:12px; font-weight:500; color:var(--amber); margin-bottom:6px;">Media release</div>
+      <div style="font-size:12px; color:var(--ink-soft); margin-bottom:10px;">I give permission for Tomorrow's Promise Foundation to use photos, videos, and artwork featuring this participant for program documentation and social media.</div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+        <input type="checkbox" checked style="width:16px; height:16px; accent-color:var(--green);"> Yes, I consent to the media release
+      </label>
+    </div>
+
+    <button class="btn btn-primary" onclick="showScreen(1, document.querySelectorAll('.screen-btn')[1])">
+      Submit intake form &#8594;
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 2: Client record created                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-1">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 2 of 6</div>
+    <div class="screen-title">The record is created instantly</div>
+    <div class="screen-desc">One form submission, one record. Staff can now see this youth, enroll them in programs, and log every interaction against their profile.</div>
+  </div>
+
+  <div class="alert alert-green">
+    <span>&#10003;</span>
+    <span>Intake submitted. Client ID <strong>MJ-2010-0314</strong> created. Coordinator notified to follow up and assign programs.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-size:20px; color:var(--white); flex-shrink:0;">MJ</div>
+        <div>
+          <div style="font-family:Georgia,serif; font-size:20px; color:var(--ink);">Marcus Johnson</div>
+          <div style="font-size:12px; color:var(--muted);">Client ID: MJ-2010-0314 &nbsp;·&nbsp; Age 16 &nbsp;·&nbsp; Travis Early College High School</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+        <span class="badge badge-green"><dot></dot> Intake complete</span>
+        <span class="badge badge-green"><dot></dot> Media release signed</span>
+        <span class="badge badge-amber"><dot></dot> No programs assigned yet</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div style="font-size:12px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Demographics</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Race / Ethnicity</span><span>Black or African American</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Gender</span><span>Male</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Zip code</span><span>78745</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Household income</span><span>$25,000 – $49,999</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Primary language</span><span>English</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--muted);">Referral source</span><span>Word of mouth</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Caregiver</div>
+      <div style="font-size:13px; font-weight:500; color:var(--ink); margin-bottom:4px;">Denise Johnson</div>
+      <div style="font-size:13px; color:var(--muted); margin-bottom:14px;">512-555-0192</div>
+      <div style="font-size:12px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">Program enrollment</div>
+      <div class="alert alert-amber" style="margin-bottom:10px; padding:8px 12px;">
+        <span style="font-size:12px;">No programs assigned. Coordinator should enroll Marcus in relevant programs.</span>
+      </div>
+      <button class="btn btn-secondary btn-sm">+ Assign to program</button>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px;">
+    <button class="btn btn-primary" onclick="showScreen(2, document.querySelectorAll('.screen-btn')[2])">Next: Log an interaction &#8594;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 3: Log an interaction                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-2">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 3 of 6</div>
+    <div class="screen-title">A staff member logs an interaction</div>
+    <div class="screen-desc">This is the tool any staff member uses after any contact with a youth. Search as you type. Takes under 60 seconds. Works on a phone.</div>
+  </div>
+
+  <div class="alert alert-amber">
+    <span>&#9432;</span>
+    <span>If a youth is not yet in the system, select "New youth — not in system yet" and their name will create a pending record with an incomplete flag. No interaction is ever lost.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Log an interaction</div>
+        <div class="card-sub">Completed by any staff member after any contact with a youth</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Search for youth *</label>
+      <div class="search-wrap" style="position:relative;">
+        <span class="search-icon">&#128269;</span>
+        <input class="form-input" type="text" id="youth-search" placeholder="Start typing a name..." oninput="handleSearch(this.value)" autocomplete="off">
+        <div class="search-results" id="search-results">
+          <div class="search-result-item" onclick="selectYouth('Marcus Johnson', 'MJ-2010-0314', 'Age 16 · Travis Early College')">
+            <div class="result-name">Marcus Johnson</div>
+            <div class="result-meta">MJ-2010-0314 · Age 16 · Travis Early College</div>
+          </div>
+          <div class="search-result-item" onclick="selectYouth('Maria Gonzalez', 'MG-2011-0722', 'Age 14 · Crockett High School')">
+            <div class="result-name">Maria Gonzalez</div>
+            <div class="result-meta">MG-2011-0722 · Age 14 · Crockett High School</div>
+          </div>
+          <div class="search-result-item" onclick="selectYouth('Jaylen Brooks', 'JB-2009-1103', 'Age 16 · Anderson High School')">
+            <div class="result-name">Jaylen Brooks</div>
+            <div class="result-meta">JB-2009-1103 · Age 16 · Anderson High School</div>
+          </div>
+          <div class="search-result-item" style="background:var(--amber-lt);" onclick="selectYouth('New youth — not in system yet', 'PENDING', '')">
+            <div class="result-name" style="color:var(--amber);">+ New youth — not in system yet</div>
+            <div class="result-meta">Creates a pending record with incomplete flag</div>
+          </div>
+        </div>
+      </div>
+      <div id="selected-youth" style="display:none; margin-top:8px; padding:8px 12px; background:var(--green-xlt); border:1px solid var(--green-lt); border-radius:6px; font-size:13px; color:var(--green); font-weight:500;"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Date of interaction *</label>
+        <input class="form-input" type="date" value="2026-04-20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Staff member *</label>
+        <select class="form-select">
+          <option>Tamara Willis (Safe Passage)</option>
+          <option>DeShawn Carter (Mentoring)</option>
+          <option selected>Rosa Medina (Case Management)</option>
+          <option>James Thompson (Youth Solidarity)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type of interaction *</label>
+        <select class="form-select">
+          <option>Program session</option>
+          <option selected>Home visit</option>
+          <option>Crisis intervention</option>
+          <option>Social worker call</option>
+          <option>Transportation</option>
+          <option>Food / basic needs</option>
+          <option>Case management session</option>
+          <option>Referral made</option>
+          <option>Phone / text check-in</option>
+          <option>Camping trip</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Program (if applicable)</label>
+        <select class="form-select">
+          <option value="">— Not program-specific —</option>
+          <option>Wellness Wednesday</option>
+          <option>Create in the Park</option>
+          <option>Austin Youth Safety Program</option>
+          <option selected>Mentoring</option>
+          <option>Safe Passage</option>
+          <option>Youth Solidarity Program</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes (what happened, what was discussed, any follow-up needed)</label>
+      <textarea class="form-textarea" placeholder="Brief description...">Met with Marcus at his home. He is doing well in school and expressed interest in joining the Youth Safety Program. Discussed goals and next steps. No concerns flagged.</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Any follow-up needed?</label>
+      <select class="form-select">
+        <option>No follow-up needed</option>
+        <option selected>Yes — enroll in Youth Safety Program</option>
+        <option>Yes — referral to external service</option>
+        <option>Yes — flag for coordinator review</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="showScreen(3, document.querySelectorAll('.screen-btn')[3])">
+      Submit interaction &#8594;
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 4: Individual client view                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-3">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 4 of 6</div>
+    <div class="screen-title">Any staff member looks up a client</div>
+    <div class="screen-desc">One place to see everything about one youth. Status flags, program enrollment, every interaction ever logged, and any open follow-ups.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-size:20px; color:var(--white); flex-shrink:0;">MJ</div>
+        <div>
+          <div style="font-family:Georgia,serif; font-size:20px; color:var(--ink);">Marcus Johnson</div>
+          <div style="font-size:12px; color:var(--muted);">MJ-2010-0314 &nbsp;·&nbsp; Age 16 &nbsp;·&nbsp; Travis Early College &nbsp;·&nbsp; 78745</div>
+          <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="badge badge-green"><dot></dot> Intake complete</span>
+            <span class="badge badge-green"><dot></dot> Media release signed</span>
+            <span class="badge badge-blue"><dot></dot> 2 programs enrolled</span>
+            <span class="badge badge-amber"><dot></dot> Follow-up pending</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px; color:var(--muted);">Last contact</div>
+        <div style="font-size:14px; font-weight:500; color:var(--ink);">Apr 20, 2026</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Home visit — Rosa Medina</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="clientTab(this,'ct-timeline')">Interaction history</button>
+    <button class="tab-btn" onclick="clientTab(this,'ct-programs')">Programs</button>
+    <button class="tab-btn" onclick="clientTab(this,'ct-demo')">Profile</button>
+    <button class="tab-btn" onclick="clientTab(this,'ct-flags')">Follow-ups</button>
+  </div>
+
+  <!-- Interaction history -->
+  <div id="ct-timeline" class="card">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">Apr 20</div>
+        <div class="timeline-line"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-type">Home visit</div>
+          <div class="timeline-note">Met at home. Expressed interest in Youth Safety Program. Goals discussed, no concerns.</div>
+          <div class="timeline-staff">Rosa Medina &nbsp;·&nbsp; Follow-up: enroll in AYSP</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Apr 14</div>
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--blue)"></div><div class="timeline-connector"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-type" style="color:var(--blue);">Program session — Mentoring</div>
+          <div class="timeline-note">One-on-one session. Discussed school progress and goal-setting. Strong engagement.</div>
+          <div class="timeline-staff">DeShawn Carter</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Apr 7</div>
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--blue)"></div><div class="timeline-connector"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-type" style="color:var(--blue);">Program session — Mentoring</div>
+          <div class="timeline-note">First mentoring session. Goal form completed. Youth set goal of improving GPA and joining a school club.</div>
+          <div class="timeline-staff">DeShawn Carter</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Mar 28</div>
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--green-lt)"></div><div class="timeline-connector"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-type" style="color:var(--muted);">Intake completed</div>
+          <div class="timeline-note">Participant intake and media release submitted online. Coordinator assigned mentoring program.</div>
+          <div class="timeline-staff">Self-submitted via website</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Programs tab -->
+  <div id="ct-programs" class="card" style="display:none;">
+    <table class="data-table">
+      <thead><tr><th>Program</th><th>Enrolled</th><th>Sessions attended</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Mentoring</td><td>Mar 28, 2026</td><td>2 of 8</td><td><span class="badge badge-green">Active</span></td></tr>
+        <tr><td>Wellness Wednesday</td><td>Apr 7, 2026</td><td>3 of 6</td><td><span class="badge badge-green">Active</span></td></tr>
+        <tr><td>Austin Youth Safety Program</td><td>—</td><td>—</td><td><span class="badge badge-amber">Pending enrollment</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;">
+      <button class="btn btn-secondary btn-sm">+ Add program</button>
+    </div>
+  </div>
+
+  <!-- Demographics tab -->
+  <div id="ct-demo" class="card" style="display:none;">
+    <div class="grid-2">
+      <div>
+        <div style="font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Personal</div>
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Date of birth</span><span>Mar 14, 2010</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Gender</span><span>Male</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Race / Ethnicity</span><span>Black or African American</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Primary language</span><span>English</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">School</span><span>Travis Early College</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Zip code</span><span>78745</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:var(--muted)">Household income</span><span>$25k–$49,999</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Caregiver</div>
+        <div style="font-size:14px; font-weight:500; margin-bottom:4px;">Denise Johnson</div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom:16px;">512-555-0192</div>
+        <div style="font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Consent status</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <span class="badge badge-green" style="width:fit-content;"><dot></dot> Intake form complete</span>
+          <span class="badge badge-green" style="width:fit-content;"><dot></dot> Media release signed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Follow-ups tab -->
+  <div id="ct-flags" class="card" style="display:none;">
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="padding:12px 14px; background:var(--amber-lt); border:1px solid #E8C96A; border-radius:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:12px; font-weight:500; color:var(--amber);">Open follow-up</div>
+            <div style="font-size:13px; color:var(--ink); margin-top:2px;">Enroll Marcus in Austin Youth Safety Program — requested by Rosa Medina</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:4px;">Flagged Apr 20, 2026</div>
+          </div>
+          <button class="btn btn-sm" style="background:var(--amber); color:white; border:none; flex-shrink:0;">Mark done</button>
+        </div>
+      </div>
+      <div style="padding:12px 14px; background:var(--white); border:1px solid var(--rule); border-radius:8px; color:var(--muted); font-size:13px;">
+        No other open follow-ups.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;">
+    <button class="btn btn-primary" onclick="showScreen(4, document.querySelectorAll('.screen-btn')[4])">Next: Program view &#8594;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 5: Program view                                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-4">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 5 of 6</div>
+    <div class="screen-title">The coordinator checks a program</div>
+    <div class="screen-desc">Filter by any program to see all enrolled participants, recent activity, attendance, and flags. Same data, different lens.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <select class="form-select" style="width:auto; flex:1; min-width:200px;" onchange="updateProgView(this.value)">
+        <option value="wellness">Wellness Wednesday</option>
+        <option value="mentoring" selected>Mentoring</option>
+        <option value="aysp">Austin Youth Safety Program</option>
+        <option value="safepassage">Safe Passage</option>
+        <option value="solidarity">Youth Solidarity Program</option>
+        <option value="create">Create in the Park</option>
+      </select>
+      <select class="form-select" style="width:auto;">
+        <option>April 2026</option><option>March 2026</option><option>Q1 2026</option>
+      </select>
+      <button class="btn btn-secondary btn-sm">Export</button>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="stat-card">
+      <div class="stat-label">Enrolled</div>
+      <div class="stat-value" id="pv-enrolled">18</div>
+      <div class="stat-sub">Active participants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sessions this month</div>
+      <div class="stat-value" id="pv-sessions">6</div>
+      <div class="stat-sub">of 8 planned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg. attendance</div>
+      <div class="stat-value" id="pv-attend">82%</div>
+      <div class="stat-sub">Per session</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title" id="pv-title">Mentoring — Participant list</div>
+      <div class="card-sub">Click any row to open that participant's full record</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Enrolled</th><th>Last contact</th><th>Sessions</th><th>Status</th></tr></thead>
+      <tbody id="pv-tbody">
+        <tr onclick="showScreen(3,document.querySelectorAll('.screen-btn')[3])">
+          <td><strong>Marcus Johnson</strong></td><td>Mar 28</td><td>Apr 20</td><td>2 of 8</td><td><span class="badge badge-amber"><dot></dot> Follow-up pending</span></td>
+        </tr>
+        <tr>
+          <td><strong>Jaylen Brooks</strong></td><td>Jan 12</td><td>Apr 18</td><td>6 of 8</td><td><span class="badge badge-green"><dot></dot> On track</span></td>
+        </tr>
+        <tr>
+          <td><strong>Aaliyah Torres</strong></td><td>Feb 3</td><td>Apr 14</td><td>5 of 8</td><td><span class="badge badge-green"><dot></dot> On track</span></td>
+        </tr>
+        <tr>
+          <td><strong>Devon Williams</strong></td><td>Mar 1</td><td>Mar 30</td><td>2 of 8</td><td><span class="badge badge-red"><dot></dot> Missed last 3</span></td>
+        </tr>
+        <tr>
+          <td><strong>Keisha Moore</strong></td><td>Feb 14</td><td>Apr 19</td><td>4 of 8</td><td><span class="badge badge-green"><dot></dot> On track</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:16px;">
+    <button class="btn btn-primary" onclick="showScreen(5, document.querySelectorAll('.screen-btn')[5])">Next: Board dashboard &#8594;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 6: Board dashboard                               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-5">
+  <div class="screen-header">
+    <div class="screen-eyebrow">Step 6 of 6</div>
+    <div class="screen-title">The board sees program health at a glance</div>
+    <div class="screen-desc">A high-level view of all programs, updated automatically as data flows in. No spreadsheet hunting. No manual assembly.</div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="stat-card" style="border-left:3px solid var(--green);">
+      <div class="stat-label">Total youth served</div>
+      <div class="stat-value">147</div>
+      <div class="stat-sub">Across all programs, 2026</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--green);">
+      <div class="stat-label">Active this month</div>
+      <div class="stat-value">89</div>
+      <div class="stat-sub">At least 1 interaction in April</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--amber);">
+      <div class="stat-label">Open follow-ups</div>
+      <div class="stat-value">12</div>
+      <div class="stat-sub">Flagged for coordinator review</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">
+      <div class="card-title">Program activity — April 2026</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Program</th><th>Enrolled</th><th>Active this month</th><th>Avg. attendance</th><th>Intake complete</th><th>Flags</th></tr></thead>
+      <tbody>
+        <tr><td>Wellness Wednesday</td><td>34</td><td>28</td><td>82%</td><td><span class="badge badge-green">100%</span></td><td>0</td></tr>
+        <tr><td>Create in the Park</td><td>22</td><td>19</td><td>76%</td><td><span class="badge badge-green">100%</span></td><td>1</td></tr>
+        <tr><td>Austin Youth Safety Program</td><td>16</td><td>15</td><td>94%</td><td><span class="badge badge-green">100%</span></td><td>0</td></tr>
+        <tr><td>Mentoring</td><td>18</td><td>14</td><td>78%</td><td><span class="badge badge-amber">89%</span></td><td>3</td></tr>
+        <tr><td>Safe Passage</td><td>38</td><td>38</td><td>—</td><td><span class="badge badge-green">100%</span></td><td>6</td></tr>
+        <tr><td>Youth Solidarity Program</td><td>19</td><td>17</td><td>89%</td><td><span class="badge badge-green">100%</span></td><td>2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Service type breakdown — April</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Program sessions</span><span style="font-weight:500;">203</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:85%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Home visits</span><span style="font-weight:500;">41</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:34%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Case management sessions</span><span style="font-weight:500;">28</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:22%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Crisis interventions</span><span style="font-weight:500;">7</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:6%; background:var(--amber);"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Transportation</span><span style="font-weight:500;">19</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:16%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Food / basic needs</span><span style="font-weight:500;">14</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:12%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Youth demographics — all programs</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Race / Ethnicity</div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Black or African American</span><span style="font-weight:500;">52%</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:52%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Hispanic or Latino</span><span style="font-weight:500;">31%</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:31%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Multiracial</span><span style="font-weight:500;">10%</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:10%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;"><span>Other / not specified</span><span style="font-weight:500;">7%</span></div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:7%"></div></div>
+        </div>
+        <div style="margin-top:6px; font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Referral sources</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;">
+          <span class="chip">Social media (38%)</span>
+          <span class="chip">Word of mouth (29%)</span>
+          <span class="chip">Partner referral (21%)</span>
+          <span class="chip">Flyer / in-person (12%)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--green); border-radius:10px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+    <div>
+      <div style="font-family:Georgia,serif; font-size:18px; color:var(--white); margin-bottom:4px;">This is what you own.</div>
+      <div style="font-size:13px; color:var(--green-lt);">Built in Google Sheets and Apps Script. No platform fees. No vendor dependency. Runs on tools your team already has.</div>
+    </div>
+    <button class="btn" style="background:var(--white); color:var(--green); flex-shrink:0;" onclick="showScreen(0,document.querySelectorAll('.screen-btn')[0])">&#8592; Start over</button>
+  </div>
+</div>
+
+<div class="credit">
+  Developed by Intentional Data for Tomorrow's Promise Foundation &mdash; intentionaldata.org
+</div>
+
+</div><!-- end .main -->
+
+<script>
+function showScreen(idx, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + idx).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clientTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#ct-timeline,#ct-programs,#ct-demo,#ct-flags').forEach(el => el.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+function handleSearch(val) {
+  const results = document.getElementById('search-results');
+  if (val.length > 0) {
+    results.style.display = 'block';
+  } else {
+    results.style.display = 'none';
+  }
+}
+
+function selectYouth(name, id, meta) {
+  document.getElementById('youth-search').value = name;
+  document.getElementById('search-results').style.display = 'none';
+  const sel = document.getElementById('selected-youth');
+  sel.style.display = 'block';
+  if (id === 'PENDING') {
+    sel.style.background = 'var(--amber-lt)';
+    sel.style.borderColor = '#E8C96A';
+    sel.style.color = 'var(--amber)';
+    sel.textContent = 'Pending record will be created with incomplete flag';
+  } else {
+    sel.style.background = 'var(--green-xlt)';
+    sel.style.borderColor = 'var(--green-lt)';
+    sel.style.color = 'var(--green)';
+    sel.textContent = `✓ ${name} · ${id} · ${meta}`;
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('search-results').style.display = 'none';
+  }
+});
+
+function updateProgView(val) {
+  const data = {
+    wellness:   { title: 'Wellness Wednesday', enrolled: 34, sessions: 8, attend: '82%' },
+    mentoring:  { title: 'Mentoring', enrolled: 18, sessions: 6, attend: '78%' },
+    aysp:       { title: 'Austin Youth Safety Program', enrolled: 16, sessions: 4, attend: '94%' },
+    safepassage:{ title: 'Safe Passage', enrolled: 38, sessions: 30, attend: '—' },
+    solidarity: { title: 'Youth Solidarity Program', enrolled: 19, sessions: 5, attend: '89%' },
+    create:     { title: 'Create in the Park', enrolled: 22, sessions: 7, attend: '76%' },
+  };
+  const d = data[val] || data.mentoring;
+  document.getElementById('pv-title').textContent = d.title + ' — Participant list';
+  document.getElementById('pv-enrolled').textContent = d.enrolled;
+  document.getElementById('pv-sessions').textContent = d.sessions;
+  document.getElementById('pv-attend').textContent = d.attend;
+}
+</script>
+</body>
+</html>
